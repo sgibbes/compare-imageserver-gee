@@ -1,0 +1,54 @@
+Results
+---
+
+Geometry in Paraguay:
+10 simultaneous by mean overall response time:
+    GFW: crashed the server
+    GEE : crashed the server
+    ESRI: 24.9 seconds
+
+20 requests:
+    GFW: crashed the server
+    GEE: crashed the server
+	ESRI: failed after 16 reponses, with mean 39.3 seconds
+
+30 requests:
+    GFW: crashed the server
+    GEE: 
+	ESRI:
+	
+---
+
+Geometry in DRC:
+10 requests:
+    GFW: crashed the server
+    GEE: crashed the server
+    ESRI: 1.8 seconds
+
+20 requests:
+    GFW: --
+    GEE: --
+	ESRI: 3.2 seconds
+
+30 requests:
+    GFW: 
+    GEE: 
+	ESRI: 4.7 seconds
+	
+---
+
+Geometry in Gabon:
+10 requests:
+    GFW: crashed the server
+    GEE: crashed the server
+    ESRI: 1.8 seconds
+
+20 requests:
+    GFW: --
+    GEE: --
+	ESRI: 3.4 seconds
+	
+30 requests:
+    GFW: 
+    GEE: 
+	ESRI: 4.8 seconds
