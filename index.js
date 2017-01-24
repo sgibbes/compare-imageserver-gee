@@ -148,35 +148,33 @@ function gee() {
 	
 	console.log('starting gee request')
 			  
-	var gee_url = 'http://api.globalforestwatch.org/forest-change/umd-loss-gain/'
+	//var gee_url = 'http://api.globalforestwatch.org/forest-change/umd-loss-gain/'
+	var gee_url = 'http://localhost:5000/'
 	
 	loadTestConfig.url = gee_url
 	loadTestConfig.statusCallback = geeStatusCallback
-	
-	// increment by 15 because that's how many requests we'll need
-	// assuming we want to generate a year-to-year histogram
-	loadTestConfig.maxRequests = loadTestConfig.maxRequests * 15
-	loadTestConfig.concurrency = loadTestConfig.concurrency * 15
 	
 	loadTestConfig.method = 'POST'
 	
 	loadTestConfig.requestGenerator = function(params, options, client, callback) {
 		
-		var minYear = 2000
-		var maxYear = 2014
-		
-		var randomYear = Math.floor(Math.random()*(maxYear-minYear+1)+minYear);		
 		var geojson = modify_geojson(load_geojson())
 		
-		var data = querystring.stringify({'geojson': JSON.stringify(geojson.features[0].geometry),
-		  'period': randomYear + '-01-01,' + (randomYear + 1) + '-01-01',
-		  'threshold': tcd})
-		  
+		var data = JSON.stringify({'geojson': JSON.stringify(geojson.features[0].geometry),
+		  'start': '2001',
+		  'end': '2014',
+		  'thresh': tcd.toString()})
+		
+		// source: http://stackoverflow.com/questions/9768192/sending-data-through-post-request-from-a-node-js-server-to-a-node-js-server
+		options.headers['Content-Type'] = 'application/json';
+		options.headers['Content-Length'] = Buffer.byteLength(data);
+		
 		var request = client(options, callback);
 		request.write(data);
 		request.end();
 		
 		return request;
+		
 	}
 	
 	runLoadTest(loadTestConfig);
