@@ -149,7 +149,7 @@ function gee() {
 	console.log('starting gee request')
 			  
 	//var gee_url = 'http://api.globalforestwatch.org/forest-change/umd-loss-gain/'
-	var gee_url = 'http://localhost:5000/'
+	var gee_url = 'http://52.200.102.67/'
 	
 	loadTestConfig.url = gee_url
 	loadTestConfig.statusCallback = geeStatusCallback
