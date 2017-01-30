@@ -66,19 +66,6 @@ function esriStatusCallback(error, result, latency) {
 
 }
 
-function gfwStatusCallback(error, result, latency) {
-
-    console.log('Mean latency %j', latency.meanLatencyMs);
-	try {
-    console.log('%j', JSON.parse(result.body).data.attributes.loss);
-	} catch (e) {
-		console.log(result)
-	}
-    console.log('----');
-    console.log('Request elapsed milliseconds: ', result.requestElapsed);
-
-}
-
 function geeStatusCallback(error, result, latency) {
 
     console.log('Mean latency %j', latency.meanLatencyMs);
@@ -92,30 +79,6 @@ function geeStatusCallback(error, result, latency) {
 
 }
 
-function create_geostore(data, callback) {
-    url = "https://production-api.globalforestwatch.org/geostore/"
-
-    //console.log(JSON.stringify({'geojson': data}))
-	console.log(JSON.stringify(data.features[0].geometry))
-
-    var headers = {
-        'Content-Type': 'application/json'
-    }
-    var options = {
-        url: 'https://production-api.globalforestwatch.org/geostore/',
-        method: 'POST',
-        headers: headers,
-        body: JSON.stringify({'geojson': data})
-    }
-
-    request(options, function(error, response, body) {
-        if (!error && response.statusCode == 200) {		
-			callback(JSON.parse(body).data.id)
-        } else {
-            console.log(response)
-        }
-    })
-}
 
 function call_esri_api(qry_params) {
 	
@@ -129,7 +92,14 @@ function call_esri_api(qry_params) {
 
 function modify_geojson(geojson) {
 	
+	var type = geojson.features[0].geometry.type
+	
+	if (type === 'MultiPolygon') {
+		var second_lat = geojson.features[0].geometry.coordinates[0][0][1][0].toString()
+	} else {
+	
 	var second_lat = geojson.features[0].geometry.coordinates[0][1][0].toString()
+	}
 		
 	// bust the cache by modifying one value slightly
 	var second_lat_str = second_lat.substring(0,9)
@@ -139,7 +109,10 @@ function modify_geojson(geojson) {
 	var updated_second_lat = parseFloat(second_lat_str + random_num_str)
 	
 	// update geometry
+	if (type === 'MultiPolygon') {
+	geojson.features[0].geometry.coordinates[0][0][1][0] = updated_second_lat } else {
 	geojson.features[0].geometry.coordinates[0][1][0] = updated_second_lat
+	}
 		 
 	return geojson
 }
@@ -149,7 +122,7 @@ function gee() {
 	console.log('starting gee request')
 			  
 	//var gee_url = 'http://api.globalforestwatch.org/forest-change/umd-loss-gain/'
-	var gee_url = 'http://52.201.51.153'
+	var gee_url = 'http://52.200.102.67'
 	
 	loadTestConfig.url = gee_url
 	loadTestConfig.statusCallback = geeStatusCallback
@@ -181,41 +154,6 @@ function gee() {
 	
 }
 
-function gfw_request(geostoreID) {
-	
-	console.log('starting gee_request')
-			  
-	var gfw_url = 'https://production-api.globalforestwatch.org/umd-loss-gain?'
-	
-	loadTestConfig.url = gfw_url
-	loadTestConfig.statusCallback = gfwStatusCallback
-	
-	// increment by 15 because that's how many requests we'll need
-	// assuming we want to generate a year-to-year histogram
-	loadTestConfig.maxRequests = loadTestConfig.maxRequests * 15
-	loadTestConfig.concurrency = loadTestConfig.concurrency * 15
-	
-	loadTestConfig.requestGenerator = function(params, options, client, callback) {
-		
-		var minYear = 2000
-		var maxYear = 2014
-		
-		var randomYear = Math.floor(Math.random()*(maxYear-minYear+1)+minYear);
-		
-		qry_params = {'geostore': geostoreID,
-		  'period': randomYear + '-01-01,' + (randomYear + 1) + '-01-01',
-		  'thresh': tcd}
-		
-		options.path += querystring.stringify(qry_params);
-				
-		var request = client(options, callback);
-		
-		return request;
-	}
-	
-	runLoadTest(loadTestConfig);
-	
-}
 
 function runLoadTest(config) {
 	
@@ -228,16 +166,6 @@ function runLoadTest(config) {
 
 }
 
-function gfw() {
-	
-	var geojson = modify_geojson(load_geojson())
-	
-	create_geostore(geojson, function(geostoreID) {
-		console.log('Geostore ID %j', geostoreID)
-		gfw_request(geostoreID)
-	})
-
-}
 
 function esri() {
     var ogr = ogr2ogr(load_geojson()).project('EPSG:3857')
@@ -256,9 +184,6 @@ function load_geojson() {
 }
 
 switch(process.argv[2]) {
-	case 'gfw':
-	  gfw();
-	  break
 	  
 	case 'esri':
 	   esri();

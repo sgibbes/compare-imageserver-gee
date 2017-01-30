@@ -3,17 +3,14 @@ Results
 
 Geometry in Paraguay:
 10 simultaneous by mean overall response time:
-    GFW: crashed the server
     GEE : 5.0 seconds
     ESRI: 24.9 seconds
 
 20 requests:
-    GFW: crashed the server
     GEE: 10.4 seconds (throttled to only run 10 at a time)
 	ESRI: failed after 16 reponses, with mean 39.3 seconds
 
 30 requests:
-    GFW: crashed the server
     GEE: 14.5 seconds (throttled to only run 10 at a time)
 	ESRI: --
 	
@@ -21,17 +18,14 @@ Geometry in Paraguay:
 
 Geometry in DRC:
 10 requests:
-    GFW: crashed the server
     GEE: 1.1 seconds
     ESRI: 1.8 seconds
 
 20 requests:
-    GFW: --
     GEE: 2.1 seconds
 	ESRI: 3.2 seconds
 
 30 requests:
-    GFW: --
     GEE: 3.2 seconds
 	ESRI: 4.7 seconds
 	
@@ -39,17 +33,14 @@ Geometry in DRC:
 
 Geometry in Gabon:	
 10 requests:
-    GFW: crashed the server
     GEE: 1.2 seconds
     ESRI: 1.8 seconds
 
 20 requests:
-    GFW: --
     GEE: 1.7 seconds
 	ESRI: 3.4 seconds
 	
 30 requests:
-    GFW: --
     GEE: 2.3 seconds
 	ESRI: 4.8 seconds
 	
@@ -57,16 +48,45 @@ Geometry in Gabon:
 
 All of Brazil:	
 10 requests:
-    GFW: crashed the server
     GEE: 5.0 seconds
     ESRI: crashed the server
 
 20 requests:
-    GFW: --
     GEE: 8.5 seconds
 	ESRI: --
 	
 30 requests:
-    GFW: --
     GEE: 11.5 seconds
 	ESRI: --
+	
+---
+
+Amazonia biome
+10 requests:
+    GEE: 6.6 seconds
+    ESRI: failed immediately, even on one request
+
+20 requests:
+    GEE: 9.4 seconds
+	ESRI: 
+	
+30 requests:
+    GEE: 12.6 seconds
+	ESRI: 
+
+---
+
+Complex WDPA poly in IDN
+10 requests:
+    GEE: failed due to invalid polygon
+    ESRI: failed immediately, even on one request
+
+20 requests:
+    GEE: 
+	ESRI: 
+	
+30 requests:
+    GEE: 
+	ESRI: 
+
+---
