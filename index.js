@@ -24,11 +24,8 @@ function toWebMerc(ogr, cb) {
 function buildImageServerURL(geojson, callback) {
     console.log('starting prep data')
 
-    var geom = geojsonToArcGIS(geojson)[0]['geometry']
-    geom.spatialReference.wkid = 3857
-
-    //console.log(JSON.stringify(geom))
-
+    var geom = geojsonToArcGIS(geojson)[0].geometry.rings
+	
     var renderingRule = {
         "rasterFunction": "Arithmetic",
         "rasterFunctionArguments": {
@@ -46,11 +43,14 @@ function buildImageServerURL(geojson, callback) {
         }
     }
 
+	// Important: don't stringify the geometry-- do the entire object only
     var esri_data = {
-        "geometry": JSON.stringify(geom),
-        "renderingRule": JSON.stringify(renderingRule),
         "geometryType": "esriGeometryPolygon",
-        "f": "json"
+        "geometry": JSON.stringify({"rings": geom, "spatialReference": {"wkid": 3857}}),
+		"mosaicRule": "",
+        "renderingRule": JSON.stringify(renderingRule),
+		"pixelSize": "",
+        "f": "pjson"
     }
 
     callback(querystring.stringify(esri_data))
@@ -79,14 +79,15 @@ function geeStatusCallback(error, result, latency) {
 
 }
 
-
 function call_esri_api(qry_params) {
-	
-	esri_api_url = 'http://gis-gfw.wri.org/arcgis/rest/services/image_services/tree_cover_loss_year_wgs84/ImageServer/computeHistograms?'
 
-	loadTestConfig.url = esri_api_url + qry_params;
+	loadTestConfig.url = "http://gis-gfw.wri.org/arcgis/rest/services/image_services/tree_cover_loss_year_wgs84/ImageServer/computeHistograms";
+	loadTestConfig.method = "POST"
+	loadTestConfig.body = qry_params
+
+	loadTestConfig.contentType = "application/x-www-form-urlencoded";
 	loadTestConfig.statusCallback = esriStatusCallback
-	
+
 	runLoadTest(loadTestConfig);
 }
 
@@ -165,7 +166,6 @@ function gee() {
 	
 }
 
-
 function runLoadTest(config) {
 	
 	loadtest.loadTest(config, function(error) {
@@ -176,7 +176,6 @@ function runLoadTest(config) {
 });
 
 }
-
 
 function esri() {
     var ogr = ogr2ogr(load_geojson()).project('EPSG:3857')

@@ -79,15 +79,15 @@ Amazonia biome
 Complex WDPA poly in IDN
 10 requests:
     GEE*: 4.9 seconds
-    ESRI: failed immediately, even on one request
+    ESRI: 8.8 seconds
 	* GEE failed initially, but fixed the polygon with ST_MakeValid() in carto
 	
 20 requests:
     GEE: 6.1 seconds
-	ESRI: 
+	ESRI: 16 seconds
 	
 30 requests:
     GEE: 8.4 seconds
-	ESRI: 
+	ESRI: 23.3 seconds
 
 ---
