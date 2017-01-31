@@ -92,9 +92,23 @@ function call_esri_api(qry_params) {
 
 function modify_geojson(geojson) {
 	
-	for (i=0; i < geojson.features[0].geometry.coordinates.length; i++) {
+	var polyType = geojson.features[0].geometry.type
 	
-	  var second_lat = geojson.features[0].geometry.coordinates[i][1][0].toString()
+	if (polyType === 'MultiPolygon') {
+		var numPolys = geojson.features[0].geometry.coordinates[0].length
+	} else {
+		var numPolys = geojson.features[0].geometry.coordinates.length
+	}
+	
+	for (i=0; i < numPolys; i++) {
+	  
+	  if (polyType === 'MultiPolygon') {
+		var second_lat = geojson.features[0].geometry.coordinates[0][i][1][0].toString()
+	  } else {
+		  var second_lat = geojson.features[0].geometry.coordinates[i][1][0].toString()
+	  }
+	  
+	  console.log(second_lat)
 	  	
 	  // bust the cache by modifying one value slightly
 	  var second_lat_str = second_lat.substring(0,9)
@@ -103,7 +117,11 @@ function modify_geojson(geojson) {
 	  
 	  var updated_second_lat = parseFloat(second_lat_str + random_num_str)
 	  
-	  geojson.features[0].geometry.coordinates[i][1][0] = updated_second_lat
+	if (polyType === 'MultiPolygon') {
+		geojson.features[0].geometry.coordinates[0][i][1][0] = updated_second_lat
+	} else {
+		geojson.features[0].geometry.coordinates[i][1][0] = updated_second_lat
+	}
 	
 	}
 		 
