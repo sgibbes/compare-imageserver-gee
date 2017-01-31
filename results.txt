@@ -63,30 +63,31 @@ All of Brazil:
 
 Amazonia biome
 10 requests:
-    GEE: 6.6 seconds
+    GEE: 6.9 seconds
     ESRI: failed immediately, even on one request
 
 20 requests:
-    GEE: 9.4 seconds
+    GEE: 9.7 seconds
 	ESRI: 
 	
 30 requests:
-    GEE: 12.6 seconds
+    GEE: 11.8 seconds
 	ESRI: 
 
 ---
 
 Complex WDPA poly in IDN
 10 requests:
-    GEE: failed due to invalid polygon
+    GEE*: 4.9 seconds
     ESRI: failed immediately, even on one request
-
+	* GEE failed initially, but fixed the polygon with ST_MakeValid() in carto
+	
 20 requests:
-    GEE: 
+    GEE: 6.1 seconds
 	ESRI: 
 	
 30 requests:
-    GEE: 
+    GEE: 8.4 seconds
 	ESRI: 
 
 ---

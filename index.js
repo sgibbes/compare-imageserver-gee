@@ -92,26 +92,19 @@ function call_esri_api(qry_params) {
 
 function modify_geojson(geojson) {
 	
-	var type = geojson.features[0].geometry.type
+	for (i=0; i < geojson.features[0].geometry.coordinates.length; i++) {
 	
-	if (type === 'MultiPolygon') {
-		var second_lat = geojson.features[0].geometry.coordinates[0][0][1][0].toString()
-	} else {
+	  var second_lat = geojson.features[0].geometry.coordinates[i][1][0].toString()
+	  	
+	  // bust the cache by modifying one value slightly
+	  var second_lat_str = second_lat.substring(0,9)
+	  var random_num = Math.floor(Math.random()*(5000000-1000000+1)+1000000)
+	  var random_num_str = random_num.toString()
+	  
+	  var updated_second_lat = parseFloat(second_lat_str + random_num_str)
+	  
+	  geojson.features[0].geometry.coordinates[i][1][0] = updated_second_lat
 	
-	var second_lat = geojson.features[0].geometry.coordinates[0][1][0].toString()
-	}
-		
-	// bust the cache by modifying one value slightly
-	var second_lat_str = second_lat.substring(0,9)
-	var random_num = Math.floor(Math.random()*(5000000-1000000+1)+1000000)
-	var random_num_str = random_num.toString()
-	
-	var updated_second_lat = parseFloat(second_lat_str + random_num_str)
-	
-	// update geometry
-	if (type === 'MultiPolygon') {
-	geojson.features[0].geometry.coordinates[0][0][1][0] = updated_second_lat } else {
-	geojson.features[0].geometry.coordinates[0][1][0] = updated_second_lat
 	}
 		 
 	return geojson
@@ -121,8 +114,7 @@ function gee() {
 	
 	console.log('starting gee request')
 			  
-	//var gee_url = 'http://api.globalforestwatch.org/forest-change/umd-loss-gain/'
-	var gee_url = 'http://52.200.102.67'
+	var gee_url = 'http://54.87.211.177'
 	
 	loadTestConfig.url = gee_url
 	loadTestConfig.statusCallback = geeStatusCallback
@@ -132,6 +124,7 @@ function gee() {
 	loadTestConfig.requestGenerator = function(params, options, client, callback) {
 		
 		var geojson = modify_geojson(load_geojson())
+
 		
 		var data = JSON.stringify({'geojson': JSON.stringify(geojson.features[0].geometry),
 		  'start': '2001',
