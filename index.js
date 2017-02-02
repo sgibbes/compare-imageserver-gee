@@ -7,6 +7,25 @@ var fs = require('fs');
 
 var tcd = 30
 
+// if on linux, log to a mongodb
+if (process.argv[5] === 'log') {
+    var log = true;
+    var saveCount = 0
+
+    var mongoose = require('mongoose');
+    var db = mongoose.connect('mongodb://localhost/results');
+
+    mongoose.connection.on('error',function (err) {  
+      console.log('Mongoose default connection error: ' + err);
+    }); 
+
+    var DataPoint = require('./datapoint');
+
+
+} else { var log = false}
+
+
+
 var loadTestConfig = {
 	maxRequests: process.argv[4],
 	concurrency: process.argv[4]
@@ -59,18 +78,42 @@ function buildImageServerURL(geojson, callback) {
 
 function esriStatusCallback(error, result, latency) {
 
-    //console.log('Mean latency %j', latency.meanLatencyMs);
-    //console.log('histograms %j', JSON.parse(result.body).histograms[0].counts);
-    //console.log('----');
-    //console.log('Request elapsed milliseconds: ', result.requestElapsed);
-	
-	console.log('time: ' + new Date());
-	console.log('test type: ' + process.argv[2])
-	console.log('polygon: ' + process.argv[3])
-	console.log('num_requests_in_test: ' + process.argv[4])
-	console.log('elapsed time: ' + result.requestElapsed)
-	console.log('result: ' + JSON.parse(result.body).histograms[0].counts)
+    try {
+        var serverResponse = JSON.parse(result.body).histograms[0].counts
+    }
+    catch (e) {
+        var serverResponse = 'ERROR'}
 
+    if (log) {
+      var dataPoint = new DataPoint({
+         datetime: new Date(),
+         server_type: process.argv[2],
+         geojson_name: process.argv[3],
+         num_requests_in_test: process.argv[4],
+         response_time_ms: result.requestElapsed,
+         response: serverResponse
+         });
+
+       dataPoint.save(function (err, dataPoint) {
+       if (err) return console.error(err);
+
+       saveCount++
+
+       if (saveCount === parseInt(process.argv[4])) {
+         db.disconnect()
+       }
+
+       });
+
+    console.log(dataPoint)
+
+      }  else {
+
+    console.log('Mean latency %j', latency.meanLatencyMs);
+    console.log('histograms %j', serverResponse);
+    console.log('----');
+    console.log('Request elapsed milliseconds: ', result.requestElapsed);
+  }
 }
 
 function geeStatusCallback(error, result, latency) {
