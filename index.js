@@ -59,10 +59,17 @@ function buildImageServerURL(geojson, callback) {
 
 function esriStatusCallback(error, result, latency) {
 
-    console.log('Mean latency %j', latency.meanLatencyMs);
-    console.log('histograms %j', JSON.parse(result.body).histograms[0].counts);
-    console.log('----');
-    console.log('Request elapsed milliseconds: ', result.requestElapsed);
+    //console.log('Mean latency %j', latency.meanLatencyMs);
+    //console.log('histograms %j', JSON.parse(result.body).histograms[0].counts);
+    //console.log('----');
+    //console.log('Request elapsed milliseconds: ', result.requestElapsed);
+	
+	console.log('time: ' + new Date());
+	console.log('test type: ' + process.argv[2])
+	console.log('polygon: ' + process.argv[3])
+	console.log('num_requests_in_test: ' + process.argv[4])
+	console.log('elapsed time: ' + result.requestElapsed)
+	console.log('result: ' + JSON.parse(result.body).histograms[0].counts)
 
 }
 
@@ -70,7 +77,7 @@ function geeStatusCallback(error, result, latency) {
 
     console.log('Mean latency %j', latency.meanLatencyMs);
 	try {
-    console.log('%j', JSON.parse(result.body).loss);
+    console.log('%j', JSON.parse(result.body).result);
 	} catch (e) {
 		console.log(result)
 	}
@@ -108,8 +115,6 @@ function modify_geojson(geojson) {
 	  } else {
 		  var second_lat = geojson.features[0].geometry.coordinates[i][1][0].toString()
 	  }
-	  
-	  console.log(second_lat)
 	  	
 	  // bust the cache by modifying one value slightly
 	  var second_lat_str = second_lat.substring(0,9)
@@ -133,7 +138,7 @@ function gee() {
 	
 	console.log('starting gee request')
 			  
-	var gee_url = 'http://54.87.211.177'
+	var gee_url = 'http://54.237.247.88/'
 	
 	loadTestConfig.url = gee_url
 	loadTestConfig.statusCallback = geeStatusCallback

@@ -3,91 +3,91 @@ Results
 
 Geometry in Paraguay:
 10 simultaneous by mean overall response time:
-    GEE : 5.0 seconds
+    GEE: 7.9 seconds
     ESRI: 24.9 seconds
 
 20 requests:
-    GEE: 10.4 seconds (throttled to only run 10 at a time)
+    GEE: 11.6 seconds
 	ESRI: failed after 16 reponses, with mean 39.3 seconds
 
 30 requests:
-    GEE: 14.5 seconds (throttled to only run 10 at a time)
+    GEE: 22.2 seconds, but failed twice due to EEException: User memory limit exceeded.
 	ESRI: --
 	
 ---
 
 Geometry in DRC:
 10 requests:
-    GEE: 1.1 seconds
+    GEE: 5.7 seconds
     ESRI: 1.8 seconds
 
 20 requests:
-    GEE: 2.1 seconds
+    GEE: 8.7 seconds
 	ESRI: 3.2 seconds
 
 30 requests:
-    GEE: 3.2 seconds
+    GEE: 11.8 seconds
 	ESRI: 4.7 seconds
 	
 ---
 
 Geometry in Gabon:	
 10 requests:
-    GEE: 1.2 seconds
+    GEE: 6.0 seconds
     ESRI: 1.8 seconds
 
 20 requests:
-    GEE: 1.7 seconds
+    GEE: 8.0 seconds
 	ESRI: 3.4 seconds
 	
 30 requests:
-    GEE: 2.3 seconds
+    GEE: 12.9 seconds
 	ESRI: 4.8 seconds
 	
 ---
 
 All of Brazil:	
 10 requests:
-    GEE: 5.0 seconds
+    GEE: 4.9 seconds
     ESRI: crashed the server
 
 20 requests:
-    GEE: 8.5 seconds
+    GEE: 7.5 seconds
 	ESRI: --
 	
 30 requests:
-    GEE: 11.5 seconds
+    GEE: 9.9 seconds
 	ESRI: --
 	
 ---
 
 Amazonia biome
 10 requests:
-    GEE: 6.9 seconds
+    GEE: 6.6 secondss
     ESRI: failed immediately, even on one request
 
 20 requests:
-    GEE: 9.7 seconds
+    GEE: 9.4 seconds
 	ESRI: 
 	
 30 requests:
-    GEE: 11.8 seconds
+    GEE: 12.5 seconds
 	ESRI: 
 
 ---
 
 Complex WDPA poly in IDN
 10 requests:
-    GEE*: 4.9 seconds
+    GEE*: 4.7 seconds
     ESRI: 8.8 seconds
 	* GEE failed initially, but fixed the polygon with ST_MakeValid() in carto
 	
 20 requests:
-    GEE: 6.1 seconds
+    GEE: 7.7 seconds
 	ESRI: 16 seconds
 	
 30 requests:
-    GEE: 8.4 seconds
+    GEE: 9.4 seconds
 	ESRI: 23.3 seconds
 
 ---
