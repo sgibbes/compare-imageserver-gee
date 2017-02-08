@@ -1,3 +1,5 @@
+#!/usr/bin/python
+
 import os
 import subprocess
 import time
@@ -5,14 +7,18 @@ import time
 src_dir = os.path.dirname(os.path.abspath(__file__))
 geojson_list = [x for x in os.listdir(src_dir) if os.path.splitext(x)[1] == '.geojson']
 
-for server_type in ['esri']:
-    for geojson in geojson_list:
-        for request_count in [10, 20, 30]:
-        
+if os.name == 'posix':
+    cwd = r'/home/ubuntu/compare-imageserver-gee'
+else:
+    cwd = os.getcwd()
+
+print geojson_list
+
+for geojson in geojson_list:
+    for request_count in [10, 20, 30]:
+        for server_type in ['esri', 'gee']:
+
             cmd = ['node', 'index.js', server_type, geojson, str(request_count), 'log']
             print cmd
 
-            subprocess.call(cmd)
-            
-            print 'sleeping . . . '
-            time.sleep(10)
+            subprocess.call(cmd, cwd=cwd)

@@ -85,13 +85,26 @@ function esriStatusCallback(error, result, latency) {
         var serverResponse = 'ERROR'}
 
     if (log) {
-      var dataPoint = new DataPoint({
+              result.serverResponse = serverResponse
+              saveToMongo(result) 
+      }  else {
+
+    console.log('Mean latency %j', latency.meanLatencyMs);
+    console.log('histograms %j', serverResponse);
+    console.log('----');
+    console.log('Request elapsed milliseconds: ', result.requestElapsed);
+  }
+}
+
+function saveToMongo(result) {
+
+    var dataPoint = new DataPoint({
          datetime: new Date(),
          server_type: process.argv[2],
          geojson_name: process.argv[3],
          num_requests_in_test: process.argv[4],
          response_time_ms: result.requestElapsed,
-         response: serverResponse
+         response: result.serverResponse
          });
 
        dataPoint.save(function (err, dataPoint) {
@@ -106,27 +119,26 @@ function esriStatusCallback(error, result, latency) {
        });
 
     console.log(dataPoint)
-
-      }  else {
-
-    console.log('Mean latency %j', latency.meanLatencyMs);
-    console.log('histograms %j', serverResponse);
-    console.log('----');
-    console.log('Request elapsed milliseconds: ', result.requestElapsed);
-  }
 }
 
 function geeStatusCallback(error, result, latency) {
 
+    try {
+        var serverResponse = JSON.parse(result.body).loss;
+        } catch (e) {
+           var serverResponse = 'ERROR'
+        }
+
+    if (log) { 
+        result.serverResponse = serverResponse
+        saveToMongo(result)
+   } else {
+
     console.log('Mean latency %j', latency.meanLatencyMs);
-	try {
-    console.log('%j', JSON.parse(result.body).result);
-	} catch (e) {
-		console.log(result)
-	}
+    console.log(serverResponse)
     console.log('----');
     console.log('Request elapsed milliseconds: ', result.requestElapsed);
-
+  }
 }
 
 function call_esri_api(qry_params) {
@@ -181,7 +193,7 @@ function gee() {
 	
 	console.log('starting gee request')
 			  
-	var gee_url = 'http://54.237.247.88/'
+	var gee_url = 'http://54.88.149.46/'
 	
 	loadTestConfig.url = gee_url
 	loadTestConfig.statusCallback = geeStatusCallback
