@@ -28,7 +28,8 @@ if (process.argv[5] === 'log') {
 
 var loadTestConfig = {
 	maxRequests: process.argv[4],
-	concurrency: process.argv[4]
+	concurrency: process.argv[4],
+	method: 'POST'
 }
 
 function toWebMerc(ogr, cb) {
@@ -144,7 +145,6 @@ function geeStatusCallback(error, result, latency) {
 function call_esri_api(qry_params) {
 
 	loadTestConfig.url = "http://gis-gfw.wri.org/arcgis/rest/services/image_services/tree_cover_loss_year_wgs84/ImageServer/computeHistograms";
-	loadTestConfig.method = "POST"
 	loadTestConfig.body = qry_params
 
 	loadTestConfig.contentType = "application/x-www-form-urlencoded";
@@ -197,8 +197,6 @@ function gee() {
 	
 	loadTestConfig.url = gee_url
 	loadTestConfig.statusCallback = geeStatusCallback
-	
-	loadTestConfig.method = 'POST'
 	
 	loadTestConfig.requestGenerator = function(params, options, client, callback) {
 		

@@ -1,0 +1,20 @@
+{
+  "name": "compare-imageserver-gee",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "loadtest": "2.2.1",
+    "ogr2ogr": "^1.0.0",
+    "arcgis-to-geojson-utils": "^1.0.1",
+    "request": "^2.79.0"
+  },
+  "devDependencies": {
+    "mongoose": "^4.8.1"
+  }
+}
