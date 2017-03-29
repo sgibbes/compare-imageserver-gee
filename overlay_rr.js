@@ -5,8 +5,49 @@ var geojsonToArcGIS = require('arcgis-to-geojson-utils').geojsonToArcGIS;
 var ogr2ogr = require('ogr2ogr')
 var fs = require('fs');
 
-// var tcd = process.argv[5];
 var tcd = 30
+
+// if on linux, log to a mongodb
+if (process.argv[5] === 'log') {
+    var log = true;
+    var saveCount = 0
+
+    var mongoose = require('mongoose');
+    var db = mongoose.connect('mongodb://localhost/results');
+
+    mongoose.connection.on('error',function (err) {  
+      console.log('Mongoose default connection error: ' + err);
+    }); 
+
+    var DataPoint = require('./datapoint');
+
+
+} else { var log = false}
+
+function saveToMongo(result) {
+
+    var dataPoint = new DataPoint({
+         datetime: new Date(),
+         server_type: process.argv[2],
+         geojson_name: process.argv[3],
+         num_requests_in_test: process.argv[4],
+         response_time_ms: result.requestElapsed,
+         response: result.serverResponse
+         });
+
+       dataPoint.save(function (err, dataPoint) {
+       if (err) return console.error(err);
+
+       saveCount++
+
+       if (saveCount === parseInt(process.argv[4])) {
+         db.disconnect()
+       }
+
+       });
+
+    console.log(dataPoint)
+}
 
 
 var loadTestConfig = {
@@ -29,7 +70,7 @@ function buildImageServerURL(geojson, callback) {
     var geom = geojsonToArcGIS(geojson)[0]['geometry']
     geom.spatialReference.wkid = 3857
 
-    //console.log(JSON.stringify(geom))
+    console.log(JSON.stringify(geom))
 
     var renderingRule = {"rasterFunction":"Arithmetic","rasterFunctionArguments":
 		{"Raster":{"rasterFunction":"Remap","rasterFunctionArguments":
@@ -54,25 +95,42 @@ function buildImageServerURL(geojson, callback) {
 
 function esriStatusCallback(error, result, latency) {
 
-		console.log(result.body)
+    try {
+        var serverResponse = JSON.parse(result.body).histograms[0].counts
+    }
+    catch (e) {
+        var serverResponse = 'ERROR'}
+
+    if (log) {
+              result.serverResponse = serverResponse
+              saveToMongo(result) 
+      }  else {
+
     console.log('Mean latency %j', latency.meanLatencyMs);
-    console.log('histograms %j', JSON.parse(result.body).histograms[0].counts);
+    console.log('histograms %j', serverResponse);
     console.log('----');
     console.log('Request elapsed milliseconds: ', result.requestElapsed);
-
+  }
 }
 
 function geeStatusCallback(error, result, latency) {
 
+    try {
+        var serverResponse = JSON.parse(result.body);
+        } catch (e) {
+           var serverResponse = 'ERROR'
+        }
+
+    if (log) { 
+        result.serverResponse = serverResponse
+        saveToMongo(result)
+   } else {
+
     console.log('Mean latency %j', latency.meanLatencyMs);
-	try {
-    console.log('%j', JSON.parse(result.body).loss);
-	} catch (e) {
-		console.log(result)
-	}
+    console.log(serverResponse)
     console.log('----');
     console.log('Request elapsed milliseconds: ', result.requestElapsed);
-
+  }
 }
 
 
@@ -118,7 +176,7 @@ function gee() {
 	console.log('starting gee request')
 
 	//var gee_url = 'http://api.globalforestwatch.org/forest-change/umd-loss-gain/'
-	var gee_url = 'http://52.200.102.67'
+	var gee_url = 'http://54.162.175.185/globecover'
 
 	loadTestConfig.url = gee_url
 	loadTestConfig.statusCallback = geeStatusCallback
