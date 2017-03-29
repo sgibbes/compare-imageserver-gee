@@ -122,7 +122,7 @@ function geeStatusCallback(error, result, latency) {
         }
 
     if (log) { 
-        result.serverResponse = serverResponse
+        result.serverResponse = JSON.stringify(serverResponse)
         saveToMongo(result)
    } else {
 

@@ -19,7 +19,9 @@ for geojson in geojson_list:
     for request_count in [10, 20, 30]:
         for server_type in ['esri', 'gee']:
 
-            cmd = ['node', 'overlay_rr.js', server_type, geojson, str(request_count), 'log']
+            geojson_path = os.path.join(geojson_dir, geojson)
+
+            cmd = ['node', 'overlay_rr.js', server_type, geojson_path, str(request_count), 'log']
             print cmd
 
             subprocess.call(cmd, cwd=cwd)
