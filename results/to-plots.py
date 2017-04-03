@@ -1,4 +1,5 @@
 import os
+import sys
 import pandas as pd
 import datetime
 import json
@@ -8,21 +9,24 @@ from dateutil.parser import parse
 matplotlib.style.use('ggplot')
 
 current_dir = os.path.dirname(os.path.abspath(__file__))
-plot_dir = os.path.join(current_dir, 'plots')
 
 def main():
 
-    df = load_data()
+    input_filename = sys.argv[1]
+    output_dir = os.path.join(current_dir, os.path.splitext(input_filename)[0] + '-plots')
+
+    df = load_data(input_filename)
     
     response_time_table = prep_response_time_table(df)
     error_count_table = prep_error_count_table(df)
     
-    make_plots(response_time_table, 'response_time')
-    make_plots(error_count_table, 'error_count')
+    make_plots(output_dir, response_time_table, 'response_time')
+    make_plots(output_dir, error_count_table, 'error_count')
 
 
-def load_data():
-    with open('compare-esri-gee-results.json') as thefile:
+def load_data(datafile):
+
+    with open(datafile) as thefile:
         data = json.load(thefile)
         
     for row in data:
@@ -34,6 +38,7 @@ def load_data():
 
     df['grouped_timestamp'] = df['timestamp'].apply(lambda dt: datetime.datetime(dt.year, dt.month, dt.day, dt.hour,30*(dt.minute // 30)))
     
+    df['geojson_name'] = df['geojson_name'].apply(lambda x: os.path.basename(x))
     df['response_time'] = df['response_time_ms'] / 1000
     
     return df
@@ -87,7 +92,7 @@ def prep_error_count_table(df):
 
     return joined_pivot
 
-def make_plots(df, plot_type):
+def make_plots(output_folder, df, plot_type):
     
     for geojson in df.geojson_name.unique():
         plot_title = geojson.replace('.geojson', '_') + plot_type
@@ -106,7 +111,7 @@ def make_plots(df, plot_type):
         fig = ax.get_figure()
         fig.autofmt_xdate()
         
-        out_png = os.path.join(plot_dir, plot_title + '.png')
+        out_png = os.path.join(output_folder, plot_title + '.png')
         fig.savefig(out_png)
     
 
