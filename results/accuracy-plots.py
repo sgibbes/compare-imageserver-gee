@@ -26,12 +26,11 @@ def main():
     grouped_df.ix[grouped_df.server_type == 'esri', 'loss_server'] = grouped_df['geojson_name'].map(lat_area_dict) * grouped_df['loss_server'] / 10000
     
     joined_df = pd.merge(zstats_df, grouped_df, how='left', on=['geojson_name', 'year'])
-    
-    #joined_df['loss_zstats'] = pd.to_numeric(joined_df['loss_zstats'], errors='coerce')
-    print joined_df
-    
     joined_df['pct_diff'] = abs(((joined_df['loss_server'] - joined_df['loss_zstats'])) / joined_df['loss_zstats']) * 100
 
+    print joined_df
+    joined_df.to_csv('joined_df.csv', index=False)
+    
     final_df = joined_df.groupby(['server_type', 'geojson_name'])['pct_diff'].mean().reset_index()
     
     final_df.to_csv('final.csv', index=False)
@@ -88,9 +87,6 @@ def build_area_dict():
 def load_zstats():
 
     zstats_df = pd.read_csv('arcgis_zstats_loss_results.csv')
-    
-    # remove no loss areas
-    zstats_df = zstats_df[zstats_df['year'] != "no loss"]
     del zstats_df['loss_m2']
     
     zstats_df = zstats_df.apply(pd.to_numeric, errors='ignore')    
