@@ -2,24 +2,18 @@ import os
 import sys
 import json
 import pandas as pd
-import numpy as np
 
 import geodesic_area
 
 
 def main():
 
-    df = load_data(sys.argv[1])
+    df = load_data()
     zstats_df = load_zstats()
     lat_area_dict = build_area_dict()
-    
-    print lat_area_dict
-    
+
     melted_df = pd.melt(df, id_vars=['server_type', 'geojson_name'], var_name='year', value_name='loss_server')
-    
     grouped_df = melted_df.groupby(['server_type', 'geojson_name', 'year'])['loss_server'].mean().reset_index()
-    
-    grouped_df.to_csv('grouped.csv', index=None)
     
     # calculate esri area -- multiply the average area of the pixels at that latitude
     # by the number of pixels in the esri response
@@ -27,18 +21,16 @@ def main():
     
     joined_df = pd.merge(zstats_df, grouped_df, how='left', on=['geojson_name', 'year'])
     joined_df['pct_diff'] = abs(((joined_df['loss_server'] - joined_df['loss_zstats'])) / joined_df['loss_zstats']) * 100
-
     print joined_df
-    joined_df.to_csv('joined_df.csv', index=False)
     
     final_df = joined_df.groupby(['server_type', 'geojson_name'])['pct_diff'].mean().reset_index()
-    
-    final_df.to_csv('final.csv', index=False)
+    final_df.to_csv('loss-accuracy.csv', index=False)
     print final_df
     
     
-def load_data(datafile):
-    with open(datafile) as thefile:
+def load_data():
+
+    with open('loss-results.json') as thefile:
         data = json.load(thefile)
         
     output_list = []

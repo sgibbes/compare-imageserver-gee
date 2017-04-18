@@ -80,7 +80,7 @@ function buildImageServerURL(geojson, callback) {
 		{"Raster":{"rasterFunction":"Arithmetic","rasterFunctionArguments":
 		{"Raster":{"rasterFunction":"Remap","rasterFunctionArguments":
 		{"InputRanges":[1,16],"OutputValues":[16],"Raster":"$1","AllowUnmatched":false}},
-		"Raster2":"$1","Operation":3}},"Raster2":"$3","Operation":1},"outputPixelType":"U8"},"Operation":3}}
+		"Raster2":"$1","Operation":3}},"Raster2":"$5","Operation":1},"outputPixelType":"U8"},"Operation":3}}
 
     var esri_data = {
         "geometry": JSON.stringify(geom),
@@ -176,7 +176,7 @@ function gee() {
 	console.log('starting gee request')
 
 	//var gee_url = 'http://api.globalforestwatch.org/forest-change/umd-loss-gain/'
-	var gee_url = 'http://54.162.175.185/globecover'
+	var gee_url = 'http://localhost:5000/globecover'
 
 	loadTestConfig.url = gee_url
 	loadTestConfig.statusCallback = geeStatusCallback

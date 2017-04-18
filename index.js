@@ -193,7 +193,7 @@ function gee() {
 	
 	console.log('starting gee request')
 			  
-	var gee_url = 'http://54.88.149.46/'
+	var gee_url = 'http://localhost:5000/loss'
 	
 	loadTestConfig.url = gee_url
 	loadTestConfig.statusCallback = geeStatusCallback
