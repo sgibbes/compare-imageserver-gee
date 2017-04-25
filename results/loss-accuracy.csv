@@ -1,0 +1,9 @@
+server_type,geojson_name,pct_diff
+esri,drc,0.073717518429
+esri,paraguay,0.129402565133
+esri,wdpa_idn_complex,69.1836373048
+gee,amazonia_biome,2.90676303134
+gee,brazil,6.39860862094
+gee,drc,0.781274232654
+gee,paraguay,0.698743618296
+gee,wdpa_idn_complex,0.918110386274

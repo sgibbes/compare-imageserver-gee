@@ -1,6 +1,7 @@
 import os
 import sys
 import pandas as pd
+import numpy as np
 import datetime
 import json
 import matplotlib, matplotlib.pyplot as plt
@@ -46,7 +47,7 @@ def load_data(datafile):
 def prep_response_time_table(df):
 
     # remove error values from this dataset
-    no_error_df = df[df.response != 'ERROR']
+    no_error_df = df[~df.response.isin(['ERROR', '"ERROR"'])]
     
     # calculate a combination of server type and test to pivot on
     no_error_df['server_test'] = no_error_df.server_type + '_' + no_error_df.num_requests_in_test.map(str)
@@ -60,12 +61,12 @@ def prep_response_time_table(df):
             
 def prep_error_count_table(df):
 
-    error_df = df[df.response == 'ERROR']
+    error_df = df[df.response.isin(['ERROR', '"ERROR"'])]
     error_grouped = error_df.groupby(['geojson_name', 'grouped_timestamp', 'server_type']).size().reset_index()
     
     error_grouped.rename(columns={0:'error_count'}, inplace=True)
     
-    success_df = df[df.response != 'ERROR']
+    success_df = df[~df.response.isin(['ERROR', '"ERROR"'])]
     success_grouped = success_df.groupby(['geojson_name', 'grouped_timestamp', 'server_type']).size().reset_index()
     
     success_grouped.rename(columns={0:'success_count'}, inplace=True)
@@ -83,9 +84,12 @@ def prep_error_count_table(df):
     
     # for combinations of server_type/timestamp/geojson where success count == 60
     # clearly there were no errors
-    # important to set this to 0, as opposed to NoData, where didn't collect data for some reason
+    # important to set this to 0, as opposed to NoData
     joined.loc[joined['success_count'] == 60, 'error_count'] = 0
     
+    # similarly, if no success, need to set error_count to 60
+    joined.loc[np.isnan(joined['success_count']), 'error_count'] = 60
+
     del joined['success_count']
     
     joined_pivot = pd.pivot_table(joined, index=['grouped_timestamp', 'geojson_name'], columns='server_type', values='error_count').reset_index()

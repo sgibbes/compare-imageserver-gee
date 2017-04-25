@@ -1,0 +1,6 @@
+server_type,geojson_name,pct_diff
+esri,drc,6.20739911965
+esri,paraguay,1.67679225552
+gee,drc,0.0200440146621
+gee,paraguay,0.194311591987
+gee,wdpa_idn_complex,0.0294184189699
